@@ -1,0 +1,149 @@
+/* RESET SIMPLE */
+* { box-sizing: border-box; }
+
+body {
+  font-family: "Inter", "Segoe UI", Arial, sans-serif;
+  margin: 0;
+  padding: 32px;
+  background: #f5f6fa;
+  color: #4d555b;
+}
+
+/* TITRE */
+h1 {
+  font-size: 28px;
+  margin-bottom: 24px;
+  font-weight: 600;
+  color: #044580;
+}
+
+/* SECTIONS */
+section {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 24px;
+  margin-bottom: 32px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+}
+
+section h2 {
+  font-size: 20px;
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-weight: 600;
+  color: #056abf;
+}
+
+/* LABEL + INPUT */
+label {
+  display: block;
+  margin-bottom: 18px;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+input, select, textarea {
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px 14px;
+  border: 1px solid #c1c4c6;
+  border-radius: 6px;
+  font-size: 15px;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: #49dcee;
+  box-shadow: 0 0 0 2px rgba(73,220,238,0.25);
+}
+
+textarea { min-height: 100px; }
+
+/* TABLE TET */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+}
+
+th, td {
+  padding: 10px;
+  border: 1px solid #e3e5e8;
+}
+
+th {
+  background: #eef7ff;
+  font-weight: 600;
+  color: #044580;
+}
+
+/* CONDITIONAL */
+.hidden { display: none; }
+
+/* BOUTON SOUMETTRE */
+#btn_submit {
+  background: linear-gradient(135deg, #20c003, #70f012);
+  color: white;
+  border: none;
+  padding: 14px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+#btn_submit:hover {
+  box-shadow: 0 4px 10px rgba(32,192,3,0.25);
+}
+
+/* -----------------------------------------------------
+   DRAG & DROP — AJOUTÉ SANS TOUCHER AU RESTE
+------------------------------------------------------ */
+.dropzone {
+  border: 2px dashed #49dcee;
+  background: #f7fcff;
+  border-radius: 10px;
+  padding: 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 8px;
+}
+
+.dropzone:hover {
+  border-color: #056abf;
+  background: #eef7ff;
+}
+
+.dropzone.dragover {
+  border-color: #20c003;
+  background: #f0fff2;
+}
+
+.dropzone p {
+  margin: 0;
+  font-size: 15px;
+  color: #4d555b;
+}
+
+.dropzone p span {
+  color: #056abf;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.file-list {
+  margin-top: 14px;
+  text-align: left;
+  font-size: 14px;
+}
+
+.file-list div {
+  margin-top: 6px;
+  padding: 6px 10px;
+  background: #eef7ff;
+  border-radius: 6px;
+  border: 1px solid #d9e6f6;
+}

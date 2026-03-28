@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="fr">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>Formulaire employeur – PRÉ‑EIMT</title>
+
+  <!-- SDK Zoho POUR WEB TABS -->
+  <script src="https://live.zwidgets.com/js-sdk/1.2/ZohoEmbededAppSDK.min.js"></script>
+
+  <!-- Feuille de style -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+
+  <h1>Formulaire employeur – PRÉ‑EIMT</h1>
+
+  <p>
+    Bienvenue. Ce formulaire nous permettra de recueillir les informations nécessaires à la préparation
+    des différentes demandes liées à l'obtention du ou des permis de travail pour lesquels vous nous avez mandatés.
+    Les renseignements fournis feront l’objet d’une analyse attentive par notre équipe. Il est possible que nous
+    communiquions avec vous afin d’obtenir des précisions supplémentaires lorsque requis.
+  </p>
+
+  <p>
+    Merci de remplir ce questionnaire avec soin. N'hésitez pas à communiquer avec nous au besoin.
+  </p>
+
+  <!-- ========================= A. Informations générales ========================= -->
+  <section>
+    <h2>A. Informations générales</h2>
+
+    <label>
+      1. Avez-vous déjà déposé une EIMT pour ce poste ?
+      <select id="EIMT_anterieure">
+        <option value="">—</option>
+        <option>Oui</option>
+        <option>Non</option>
+      </select>
+    </label>
+
+    <div id="grp_eimt_pdf" class="conditional hidden">
+      <div class="dropzone" data-target="EIMT_anterieure_pdf">
+        <p>Déposez vos fichiers ici ou <span>cliquez pour parcourir</span></p>
+        <input type="file" id="EIMT_anterieure_pdf" hidden multiple>
+        <div class="file-list" id="EIMT_anterieure_pdf_list"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================= B. Poste visé ========================= -->
+  <section>
+    <h2>B. Poste visé</h2>
+
+    <label>
+      2. Quel est le titre du poste ?
+      <input type="text" id="Titre_poste">
+    </label>
+
+    <label>
+      3. Avez-vous une description détaillée du poste ?
+      <select id="Description_poste_existe">
+        <option value="">—</option>
+        <option>Oui</option>
+        <option>Non</option>
+      </select>
+    </label>
+
+    <div id="grp_desc_pdf" class="conditional hidden">
+      <div class="dropzone" data-target="Description_poste_pdf">
+        <p>Déposez vos fichiers ici ou <span>cliquez pour parcourir</span></p>
+        <input type="file" id="Description_poste_pdf" hidden multiple>
+        <div class="file-list" id="Description_poste_pdf_list"></div>
+      </div>
+    </div>
+
+    <label>
+      4. Combien de travailleurs sont visés par cette demande ?
+      <input type="number" id="Nb_TET_vises" min="1" value="1">
+    </label>
+
+    <label>
+      5. S’agit-il d’un renouvellement ?
+      <select id="Renouvellement">
+        <option value="">—</option>
+        <option>Oui</option>
+        <option>Non</option>
+      </select>
+    </label>
+
+    <label>
+      6. Le poste est-il syndiqué ?
+      <select id="Poste_syndique">
+        <option value="">—</option>
+        <option>Oui</option>
+        <option>Non</option>
+      </select>
+    </label>
+
+  </section>
+
+  <!-- ========================= C. Lieu de travail ========================= -->
+  <section>
+    <h2>C. Lieu de travail</h2>
+
+    <label>7. Quelle est l’adresse du lieu de travail ?
+      <input id="Adresse_LieuTravail">
+    </label>
+
+    <label>8. Quelle est la ville du lieu de travail ?
+      <input id="Ville_LieuTravail">
+    </label>
+
+    <label>9. Quel est le code postal du lieu de travail ?
+      <input id="CodePostal_LieuTravail">
+    </label>
+
+  </section>
+
+  <!-- ========================= D. Rémunération ========================= -->
+  <section>
+    <h2>D. Rémunération</h2>
+
+    <div id="q10">
+      <label>
+        10. Tous les travailleurs ont-ils le même salaire ?
+        <select id="Tous_meme_salaire">
+          <option value="">—</option>
+          <option>Oui</option>
+          <option>Non</option>
+        </select>
+      </label>
+    </div>
+
+    <div id="grp_salaire_unique" class="conditional hidden">
+      <label>
+        11. Quel est le salaire horaire unique ?
+        <input id="Salaire_horaire_unique" type="number" step="0.01" min="0">
+      </label>
+    </div>
+
+    <div id="grp_liste_tet" class="conditional hidden">
+      <label>12. Veuillez indiquer le prénom, le nom et le salaire horaire de chaque TET :</label>
+      <table>
+        <thead>
+          <tr><th>Prénom</th><th>Nom</th><th>Salaire horaire</th></tr>
+        </thead>
+        <tbody id="tbl_body"></tbody>
+      </table>
+    </div>
+
+    <label>
+      13. Est-ce qu’un taux pour les heures supplémentaires s’applique ?
+      <select id="Heures_sup">
+        <option value="">—</option>
+        <option>Oui</option>
+        <option>Non</option>
+      </select>
+    </label>
+
+    <div id="grp_taux_hs" class="conditional hidden">
+      <label>
+        14. Quel est le taux des heures supplémentaires ?
+        <input id="Taux_heures_sup" type="number" step="0.01" min="0">
+      </label>
+    </div>
+
+    <label>
+      15. Combien de jours de vacances annuels sont offerts ?
+      <input id="Vacances_jours" type="number" min="0" value="10">
+    </label>
+
+    <!-- Nouvelle Q16 multi-select type “tags” -->
+    <label>
+      16. Parmi les avantages sociaux suivants, lesquels offrez-vous ?
+    </label>
+
+    <div id="Avantages_container" class="multi-select">
+      <div class="multi-option" data-value="Assurance maladie">Assurance maladie</div>
+      <div class="multi-option" data-value="Assurance dentaire">Assurance dentaire</div>
+      <div class="multi-option" data-value="Assurance invalidité">Assurance invalidité</div>
+      <div class="multi-option" data-value="Autres">Autres</div>
+    </div>
+
+    <input type="hidden" id="Avantages_sociaux">
+
+    <label>
+      17. Décrivez les avantages sociaux (détails) :
+      <textarea id="Avantages_details"></textarea>
+    </label>
+
+    <label>
+      18. Offrez-vous un régime de retraite ?
+      <select id="Regime_retraite">
+        <option value="">—</option>
+        <option>Oui</option>
+        <option>Non</option>
+      </select>
+    </label>
+
+    <div id="grp_regime_retraite" class="conditional hidden">
+      <label>
+        19. Veuillez décrire le régime de retraite :
+        <textarea id="Description_regime_retraite"></textarea>
+      </label>
+    </div>
+
+  </section>
+
+  <!-- ========================= E. Informations générales ========================= -->
+  <section>
+    <h2>E. Informations générales</h2>
+
+    <label>
+      20. Quel est le NEQ de l’entité ?
+      <input type="text" id="NEQ">
+    </label>
+
+    <label>
+      21. Quel est le numéro ARC de l’entité ?
+      <input type="text" id="ARC">
+    </label>
+
+    <label>
+      22. Combien d’employés sont actuellement déclarés sous le numéro ARC ?
+      <input type="number" id="Nb_employes_ARC" min="0">
+    </label>
+
+    <label>
+      23. Vos revenus annuels dépassent-ils 5 M$ ?
+      <select id="Revenus_5M">
+        <option value="">—</option>
+        <option>Oui</option>
+        <option>Non</option>
+      </select>
+    </label>
+
+    <label>
+      24. Participez-vous au programme Travail partagé d’EDSC ?
+      <select id="Travail_partage">
+        <option value="">—</option>
+        <option>Oui</option>
+        <option>Non</option>
+      </select>
+    </label>
+
+    <div id="grp_travail_partage" class="conditional hidden">
+      <label>
+        25. Veuillez décrire les circonstances relatives à votre participation :
+        <textarea id="Travail_partage_details"></textarea>
+      </label>
+    </div>
+
+  </section>
+
+  <!-- ========================= F. Informations complémentaires ========================= -->
+  <section>
+    <h2>F. Informations complémentaires</h2>
+
+    <label>
+      26. Avez-vous des informations complémentaires à fournir ?
+      <textarea id="Informations_complementaires"></textarea>
+    </label>
+
+    <label>27. Voulez-vous téléverser d’autres documents pertinents ?</label>
+    <div class="dropzone" data-target="Documents_supplementaires">
+      <p>Déposez vos fichiers ici ou <span>cliquez pour parcourir</span></p>
+      <input type="file" id="Documents_supplementaires" multiple hidden>
+      <div class="file-list" id="Documents_supplementaires_list"></div>
+    </div>
+
+  </section>
+
+  <button id="btn_submit">Soumettre</button>
+  <div id="msg"></div>
+
+  <!-- Script logique -->
+  <script src="app.js"></script>
+
+</body>
+</html>
