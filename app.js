@@ -3,7 +3,7 @@ ZOHO.embeddedApp.on("PageLoad", async function (data) {
     /* =======================
        Utils
     ======================= */
-    const $ = (id) => document.getElementById(id);
+    const $ = id => document.getElementById(id);
 
     const show = (id, flag) => {
         const el = $(id);
@@ -11,7 +11,7 @@ ZOHO.embeddedApp.on("PageLoad", async function (data) {
         el.classList.toggle("hidden", !flag);
     };
 
-    const dec2 = (n) => {
+    const dec2 = n => {
         const v = parseFloat(n);
         return isNaN(v) ? 0 : parseFloat(v.toFixed(2));
     };
@@ -26,30 +26,18 @@ ZOHO.embeddedApp.on("PageLoad", async function (data) {
             const list = zone.querySelector(".file-list");
 
             zone.addEventListener("click", () => input.click());
+            zone.addEventListener("dragover", e => { e.preventDefault(); zone.classList.add("dragover"); });
+            zone.addEventListener("dragleave", () => zone.classList.remove("dragover"));
 
-            zone.addEventListener("dragover", (e) => {
-                e.preventDefault();
-                zone.classList.add("dragover");
-            });
-
-            zone.addEventListener("dragleave", () => {
-                zone.classList.remove("dragover");
-            });
-
-            zone.addEventListener("drop", (e) => {
+            zone.addEventListener("drop", e => {
                 e.preventDefault();
                 zone.classList.remove("dragover");
-
                 const dt = new DataTransfer();
-
                 if (input.files && input.files.length > 0) {
                     for (const f of input.files) dt.items.add(f);
                 }
-
                 for (const f of e.dataTransfer.files) dt.items.add(f);
-
                 input.files = dt.files;
-
                 updateList();
             });
 
@@ -58,7 +46,6 @@ ZOHO.embeddedApp.on("PageLoad", async function (data) {
             function updateList() {
                 list.innerHTML = "";
                 if (!input.files) return;
-
                 [...input.files].forEach(file => {
                     const div = document.createElement("div");
                     div.textContent = file.name;
@@ -67,53 +54,29 @@ ZOHO.embeddedApp.on("PageLoad", async function (data) {
             }
         });
     }
+
     initDropzones();
 
     /* =======================
-       MULTI-TAG SELECTOR
+       MULTI-TAGS
     ======================= */
     const tagEls = document.querySelectorAll("#Avantages_container .multi-option");
     tagEls.forEach(opt => {
         opt.addEventListener("click", () => {
             opt.classList.toggle("selected");
-            const selected = [...document.querySelectorAll(".multi-option.selected")]
-                .map(o => o.dataset.value);
+            const selected = [...document.querySelectorAll(".multi-option.selected")].map(o => o.dataset.value);
             $("Avantages_sociaux").value = JSON.stringify(selected);
         });
     });
 
-    /* =======================
-       Conditionnels
-    ======================= */
-
+    /* ===================================================
+       CONDITIONNELS — GARDÉS CAR NON-CONTRADICTOIRES
+    =================================================== */
     $("EIMT_anterieure").onchange = () =>
         show("grp_eimt_pdf", $("EIMT_anterieure").value === "Oui");
 
     $("Description_poste_existe").onchange = () =>
         show("grp_desc_pdf", $("Description_poste_existe").value === "Oui");
-
-    $("Tous_meme_salaire").onchange = () => {
-        const val = $("Tous_meme_salaire").value;
-        const n = parseInt($("Nb_TET_vises").value || "0", 10);
-
-        if (n === 1) {
-            show("grp_salaire_unique", true);
-            show("grp_liste_tet", false);
-            return;
-        }
-
-        if (val === "Oui") {
-            show("grp_salaire_unique", true);
-            show("grp_liste_tet", false);
-        } else if (val === "Non") {
-            show("grp_salaire_unique", false);
-            show("grp_liste_tet", true);
-            rebuildRows();
-        } else {
-            show("grp_salaire_unique", false);
-            show("grp_liste_tet", false);
-        }
-    };
 
     $("Heures_sup").onchange = () =>
         show("grp_taux_hs", $("Heures_sup").value === "Oui");
@@ -124,51 +87,48 @@ ZOHO.embeddedApp.on("PageLoad", async function (data) {
     $("Travail_partage").onchange = () =>
         show("grp_travail_partage", $("Travail_partage").value === "Oui");
 
-/* =======================
-   LOGIQUE TET (version finale)
-======================= */
+    /* ===================================================
+       NOUVELLE LOGIQUE TET — LA SEULE ACTIVE
+    =================================================== */
 
-function updateTETLogic() {
-    const n = parseInt($("Nb_TET_vises").value || "0", 10);
-    const choix = $("Tous_meme_salaire").value;
+    function updateTETLogic() {
+        const n = parseInt($("Nb_TET_vises").value || "0", 10);
+        const choix = $("Tous_meme_salaire").value;
 
-    // 1) Par défaut → Q11
-    show("q10", false);
-    show("grp_salaire_unique", true);
-    show("grp_liste_tet", false);
+        // PAR DÉFAUT → Q11
+        show("q10", false);
+        show("grp_salaire_unique", true);
+        show("grp_liste_tet", false);
 
-    // 2) Si Q4 > 1 → afficher Q10
-    if (n > 1) {
-        show("q10", true);
-        show("grp_salaire_unique", false);
-
-        // 3) Q10 = Oui → Q11
-        if (choix === "Oui") {
-            show("grp_salaire_unique", true);
-            show("grp_liste_tet", false);
-        }
-
-        // 4) Q10 = Non → Q12
-        if (choix === "Non") {
-            show("grp_liste_tet", true);
+        // SI Q4 > 1 → Q10
+        if (n > 1) {
+            show("q10", true);
             show("grp_salaire_unique", false);
-            rebuildRows();
+
+            // Q10 = Oui → Q11
+            if (choix === "Oui") {
+                show("grp_salaire_unique", true);
+                show("grp_liste_tet", false);
+            }
+
+            // Q10 = Non → Q12
+            if (choix === "Non") {
+                show("grp_liste_tet", true);
+                show("grp_salaire_unique", false);
+                rebuildRows();
+            }
         }
     }
-}
 
-// Brancher la logique sur les bons événements
-$("Nb_TET_vises").oninput = updateTETLogic;
-$("Nb_TET_vises").onchange = updateTETLogic;
-$("Tous_meme_salaire").onchange = updateTETLogic;
+    $("Nb_TET_vises").oninput = updateTETLogic;
+    $("Nb_TET_vises").onchange = updateTETLogic;
+    $("Tous_meme_salaire").onchange = updateTETLogic;
 
-// Appliquer la logique au chargement initial
-updateTETLogic();
+    updateTETLogic(); // initial
 
-
-    /* =======================
-       Tableau dynamique TET
-    ======================= */
+    /* ===================================================
+       TABLEAU TET
+    =================================================== */
     const body = $("tbl_body");
 
     function rebuildRows(prefill = []) {
@@ -194,9 +154,10 @@ updateTETLogic();
         }
     }
 
-    /* =======================
-       Matter prefill
-    ======================= */
+    /* ===================================================
+       Matter prefill (inchangé)
+    =================================================== */
+
     let matterId = data?.EntityId || null;
 
     if (!matterId) {
@@ -216,7 +177,6 @@ updateTETLogic();
             const m = resp?.data?.[0];
 
             if (m) {
-
                 if (m.C_P_lieu_de_travail && !$("CodePostal_LieuTravail").value) {
                     $("CodePostal_LieuTravail").value = m.C_P_lieu_de_travail;
                 }
@@ -234,45 +194,37 @@ updateTETLogic();
 
                 if (pre.length) {
                     $("Tous_meme_salaire").value = "Non";
-                    show("grp_salaire_unique", false);
-                    show("grp_liste_tet", true);
                     $("Nb_TET_vises").value = pre.length;
+                    updateTETLogic();
                     rebuildRows(pre);
                 }
-
             }
         } catch (e) {}
     }
 
-    /* =======================
-       Soumission
-    ======================= */
-    $("btn_submit").onclick = async () => {
+    /* ===================================================
+       Soumission (inchangé)
+    =================================================== */
 
+    $("btn_submit").onclick = async () => {
         $("msg").textContent = "Traitement...";
 
         const payload = {
             Matter: matterId,
-
             Titre_poste: $("Titre_poste").value || "",
             Nb_TET_vises: parseInt($("Nb_TET_vises").value || "0", 10),
             Renouvellement: $("Renouvellement").value,
             Poste_syndique: $("Poste_syndique").value,
-
             Adresse_LieuTravail: $("Adresse_LieuTravail").value || "",
             Ville_LieuTravail: $("Ville_LieuTravail").value || "",
             CodePostal_LieuTravail: $("CodePostal_LieuTravail").value || "",
-
             Tous_meme_salaire: $("Tous_meme_salaire").value,
             Heures_sup: $("Heures_sup").value,
             Vacances_jours: parseInt($("Vacances_jours").value || "0", 10),
-
             Avantages_sociaux: JSON.parse($("Avantages_sociaux").value || "[]"),
             Avantages_details: $("Avantages_details").value || "",
-
             Regime_retraite: $("Regime_retraite").value,
             Informations_complementaires: $("Informations_complementaires").value || "",
-
             Questionnaire_statut: "Soumis"
         };
 
@@ -313,7 +265,6 @@ updateTETLogic();
             console.error(e);
         }
     };
-
 });
 
 /* Obligatoire WebTab */
