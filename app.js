@@ -1,8 +1,8 @@
 ZOHO.embeddedApp.on("PageLoad", async function (data) {
 
-    /* ============================================================
+    /* =======================
        Utils
-    ============================================================ */
+    ======================= */
     const $ = (id) => document.getElementById(id);
 
     const show = (id, flag) => {
@@ -16,19 +16,17 @@ ZOHO.embeddedApp.on("PageLoad", async function (data) {
         return isNaN(v) ? 0 : parseFloat(v.toFixed(2));
     };
 
-    /* ============================================================
-       DRAG & DROP — MULTI-FICHIERS AVEC FUSION
-    ============================================================ */
+    /* =======================
+       DRAG & DROP — FUSION
+    ======================= */
     function initDropzones() {
         document.querySelectorAll(".dropzone").forEach(zone => {
 
             const input = zone.querySelector("input[type='file']");
             const list = zone.querySelector(".file-list");
 
-            // Clic → filepicker
             zone.addEventListener("click", () => input.click());
 
-            // Drag visual
             zone.addEventListener("dragover", (e) => {
                 e.preventDefault();
                 zone.classList.add("dragover");
@@ -38,19 +36,16 @@ ZOHO.embeddedApp.on("PageLoad", async function (data) {
                 zone.classList.remove("dragover");
             });
 
-            // Drop avec fusion
             zone.addEventListener("drop", (e) => {
                 e.preventDefault();
                 zone.classList.remove("dragover");
 
                 const dt = new DataTransfer();
 
-                // Fichiers déjà présents
                 if (input.files && input.files.length > 0) {
                     for (const f of input.files) dt.items.add(f);
                 }
 
-                // Nouveaux fichiers
                 for (const f of e.dataTransfer.files) dt.items.add(f);
 
                 input.files = dt.files;
@@ -65,36 +60,43 @@ ZOHO.embeddedApp.on("PageLoad", async function (data) {
                 if (!input.files) return;
 
                 [...input.files].forEach(file => {
-                    const d = document.createElement("div");
-                    d.textContent = file.name;
-                    list.appendChild(d);
+                    const div = document.createElement("div");
+                    div.textContent = file.name;
+                    list.appendChild(div);
                 });
             }
         });
     }
-
     initDropzones();
 
+    /* =======================
+       MULTI-TAG SELECTOR
+    ======================= */
+    const tagEls = document.querySelectorAll("#Avantages_container .multi-option");
+    tagEls.forEach(opt => {
+        opt.addEventListener("click", () => {
+            opt.classList.toggle("selected");
+            const selected = [...document.querySelectorAll(".multi-option.selected")]
+                .map(o => o.dataset.value);
+            $("Avantages_sociaux").value = JSON.stringify(selected);
+        });
+    });
 
-    /* ============================================================
+    /* =======================
        Conditionnels
-    ============================================================ */
+    ======================= */
 
-    // 1–2 : Déjà une EIMT ?
     $("EIMT_anterieure").onchange = () =>
         show("grp_eimt_pdf", $("EIMT_anterieure").value === "Oui");
 
-    // 3–4 : Description du poste
     $("Description_poste_existe").onchange = () =>
         show("grp_desc_pdf", $("Description_poste_existe").value === "Oui");
 
-    // 10–12 : même salaire ?
     $("Tous_meme_salaire").onchange = () => {
         const val = $("Tous_meme_salaire").value;
         const n = parseInt($("Nb_TET_vises").value || "0", 10);
 
         if (n === 1) {
-            // Cas spécial « un seul travailleur »
             show("grp_salaire_unique", true);
             show("grp_liste_tet", false);
             return;
@@ -113,37 +115,28 @@ ZOHO.embeddedApp.on("PageLoad", async function (data) {
         }
     };
 
-    // 13–14 : heures sup
     $("Heures_sup").onchange = () =>
         show("grp_taux_hs", $("Heures_sup").value === "Oui");
 
-    // 19–20 : régime de retraite
     $("Regime_retraite").onchange = () =>
         show("grp_regime_retraite", $("Regime_retraite").value === "Oui");
 
-    // 24–25 : travail partagé
     $("Travail_partage").onchange = () =>
         show("grp_travail_partage", $("Travail_partage").value === "Oui");
 
-
-    /* ============================================================
-       Cas spécial : Nb travailleurs (1 travailleur = logique réduite)
-    ============================================================ */
+    /* =======================
+       Case spéciale : Nb TET
+    ======================= */
     $("Nb_TET_vises").oninput = () => {
 
         const n = parseInt($("Nb_TET_vises").value || "0", 10);
 
         if (n === 1) {
-            // Masquer Q10 (Tous même salaire)
-            show("Tous_meme_salaire", false);
-
-            // Forcer mode salaire unique
+            show("q10", false);
             show("grp_salaire_unique", true);
             show("grp_liste_tet", false);
-
         } else {
-            // Affichage normal
-            show("Tous_meme_salaire", true);
+            show("q10", true);
 
             if ($("Tous_meme_salaire").value === "Non") {
                 show("grp_liste_tet", true);
@@ -154,10 +147,9 @@ ZOHO.embeddedApp.on("PageLoad", async function (data) {
         }
     };
 
-
-    /* ============================================================
+    /* =======================
        Tableau dynamique TET
-    ============================================================ */
+    ======================= */
     const body = $("tbl_body");
 
     function rebuildRows(prefill = []) {
@@ -183,10 +175,9 @@ ZOHO.embeddedApp.on("PageLoad", async function (data) {
         }
     }
 
-
-    /* ============================================================
-       Contexte MATTER
-    ============================================================ */
+    /* =======================
+       Contexte Matter
+    ======================= */
     let matterId = data?.EntityId || null;
 
     if (!matterId) {
@@ -196,10 +187,9 @@ ZOHO.embeddedApp.on("PageLoad", async function (data) {
         } catch (e) {}
     }
 
-
-    /* ============================================================
-       Préremplissage depuis Matter
-    ============================================================ */
+    /* =======================
+       Préremplissage Matter
+    ======================= */
     if (matterId) {
         try {
             const resp = await ZOHO.CRM.API.getRecord({
@@ -210,6 +200,7 @@ ZOHO.embeddedApp.on("PageLoad", async function (data) {
             const m = resp?.data?.[0];
 
             if (m) {
+
                 if (m.C_P_lieu_de_travail && !$("CodePostal_LieuTravail").value) {
                     $("CodePostal_LieuTravail").value = m.C_P_lieu_de_travail;
                 }
@@ -232,19 +223,17 @@ ZOHO.embeddedApp.on("PageLoad", async function (data) {
                     $("Nb_TET_vises").value = pre.length;
                     rebuildRows(pre);
                 }
+
             }
         } catch (e) {}
     }
 
-
-    /* ============================================================
+    /* =======================
        Soumission
-    ============================================================ */
+    ======================= */
     $("btn_submit").onclick = async () => {
 
         $("msg").textContent = "Traitement...";
-
-        const listAv = [...$("Avantages_sociaux").selectedOptions].map(o => o.value);
 
         const payload = {
             Matter: matterId,
@@ -262,7 +251,7 @@ ZOHO.embeddedApp.on("PageLoad", async function (data) {
             Heures_sup: $("Heures_sup").value,
             Vacances_jours: parseInt($("Vacances_jours").value || "0", 10),
 
-            Avantages_sociaux: listAv,
+            Avantages_sociaux: JSON.parse($("Avantages_sociaux").value || "[]"),
             Avantages_details: $("Avantages_details").value || "",
 
             Regime_retraite: $("Regime_retraite").value,
@@ -271,8 +260,6 @@ ZOHO.embeddedApp.on("PageLoad", async function (data) {
             Questionnaire_statut: "Soumis"
         };
 
-
-        /* Salaire unique ou liste */
         if (payload.Nb_TET_vises === 1) {
             payload.Salaire_horaire_unique = dec2($("Salaire_horaire_unique").value);
 
@@ -291,8 +278,6 @@ ZOHO.embeddedApp.on("PageLoad", async function (data) {
             payload.Liste_TET = rows;
         }
 
-
-        /* Envoi Zoho */
         try {
             const ins = await ZOHO.CRM.API.insertRecord({
                 Entity: "PRE_EIMT_Formulaire_1",
@@ -315,6 +300,5 @@ ZOHO.embeddedApp.on("PageLoad", async function (data) {
 
 });
 
-
-/* Obligatoire pour Web Tab */
+/* Obligatoire WebTab */
 ZOHO.embeddedApp.init();
