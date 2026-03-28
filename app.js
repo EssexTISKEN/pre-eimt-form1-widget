@@ -124,36 +124,47 @@ ZOHO.embeddedApp.on("PageLoad", async function (data) {
     $("Travail_partage").onchange = () =>
         show("grp_travail_partage", $("Travail_partage").value === "Oui");
 
-    /* =======================
-       ⭐ CORRECTION FONDAMENTALE Q10 / TET=1 ⭐
-    ======================= */
+/* =======================
+   LOGIQUE TET (version finale)
+======================= */
 
-    function updateTETLogic() {
-        const n = parseInt($("Nb_TET_vises").value || "0", 10);
+function updateTETLogic() {
+    const n = parseInt($("Nb_TET_vises").value || "0", 10);
+    const choix = $("Tous_meme_salaire").value;
 
-        if (n === 1) {
-            show("q10", false);
+    // 1) Par défaut → Q11
+    show("q10", false);
+    show("grp_salaire_unique", true);
+    show("grp_liste_tet", false);
+
+    // 2) Si Q4 > 1 → afficher Q10
+    if (n > 1) {
+        show("q10", true);
+        show("grp_salaire_unique", false);
+
+        // 3) Q10 = Oui → Q11
+        if (choix === "Oui") {
             show("grp_salaire_unique", true);
             show("grp_liste_tet", false);
-        } else {
-            show("q10", true);
+        }
 
-            if ($("Tous_meme_salaire").value === "Non") {
-                show("grp_liste_tet", true);
-                rebuildRows();
-            } else if ($("Tous_meme_salaire").value === "Oui") {
-                show("grp_salaire_unique", true);
-            } else {
-                show("grp_salaire_unique", false);
-            }
+        // 4) Q10 = Non → Q12
+        if (choix === "Non") {
+            show("grp_liste_tet", true);
+            show("grp_salaire_unique", false);
+            rebuildRows();
         }
     }
+}
 
-    // ⭐ handle both events
-    $("Nb_TET_vises").oninput = updateTETLogic;
-    $("Nb_TET_vises").onchange = updateTETLogic;
+// Brancher la logique sur les bons événements
+$("Nb_TET_vises").oninput = updateTETLogic;
+$("Nb_TET_vises").onchange = updateTETLogic;
+$("Tous_meme_salaire").onchange = updateTETLogic;
 
-    // ⭐ FIN AJOUT
+// Appliquer la logique au chargement initial
+updateTETLogic();
+
 
     /* =======================
        Tableau dynamique TET
