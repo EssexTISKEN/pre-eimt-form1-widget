@@ -8,10 +8,10 @@
   <title>Formulaire employeur – PRÉ‑EIMT</title>
 
   <!-- SDK Zoho POUR WEB TABS -->
-  https://live.zwidgets.com/js-sdk/1.2/ZohoEmbededAppSDK.min.js
+  <script src="https://live.zwidgets.com/js-sdk/1.2/Zoho.min.js</script>
 
   <!-- Feuille de style -->
-  styles.css
+  <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
@@ -37,10 +37,10 @@
       </select>
     </label>
 
-    <div id="grp_eimt_pdf" class="conditional hidden">
+    <div id="grp_eimt_pdf" class="hidden">
       <div class="dropzone" data-target="EIMT_anterieure_pdf">
         <p>Déposez vos fichiers ici ou <span>cliquez pour parcourir</span></p>
-        <input type="file" id="EIMT_anterieure_pdf" hidden multiple>
+        <input type="file" id="EIMT_anterieure_pdf" hidden multiple />
         <div class="file-list" id="EIMT_anterieure_pdf_list"></div>
       </div>
     </div>
@@ -64,10 +64,10 @@
       </select>
     </label>
 
-    <div id="grp_desc_pdf" class="conditional hidden">
+    <div id="grp_desc_pdf" class="hidden">
       <div class="dropzone" data-target="Description_poste_pdf">
         <p>Déposez vos fichiers ici ou <span>cliquez pour parcourir</span></p>
-        <input type="file" id="Description_poste_pdf" hidden multiple>
+        <input type="file" id="Description_poste_pdf" hidden multiple />
         <div class="file-list" id="Description_poste_pdf_list"></div>
       </div>
     </div>
@@ -130,18 +130,18 @@
       </label>
     </div>
 
-    <div id="grp_salaire_unique" class="conditional hidden">
+    <div id="grp_salaire_unique" class="hidden">
       <label>
         11. Quel est le salaire horaire unique ?
         <input id="Salaire_horaire_unique" type="number" step="0.01" min="0">
       </label>
     </div>
 
-    <div id="grp_liste_tet" class="conditional hidden">
-      <label>12. Prénom, nom et salaire de chaque TET :</label>
+    <div id="grp_liste_tet" class="hidden">
+      <label>12. Prénom, nom et salaire horaire de chaque TET :</label>
       <table>
         <thead>
-          <tr><th>Prénom</th><th>Nom</th><th>Salaire horaire</th></tr>
+          <tr><th>Prénom</th><th>Nom</th><th>Salaire</th></tr>
         </thead>
         <tbody id="tbl_body"></tbody>
       </table>
@@ -156,7 +156,7 @@
       </select>
     </label>
 
-    <div id="grp_taux_hs" class="conditional hidden">
+    <div id="grp_taux_hs" class="hidden">
       <label>
         14. Quel est le taux des heures supplémentaires ?
         <input id="Taux_heures_sup" type="number" step="0.01" min="0">
@@ -168,7 +168,7 @@
       <input id="Vacances_jours" type="number" min="0" value="10">
     </label>
 
-    <!-- Q16 — MULTI TAG SELECTOR -->
+    <!-- MULTI‑TAGS — STYLE B -->
     <label>16. Parmi les avantages sociaux suivants, lesquels offrez-vous ?</label>
 
     <div id="Avantages_container" class="multi-select">
@@ -194,9 +194,9 @@
       </select>
     </label>
 
-    <div id="grp_regime_retraite" class="conditional hidden">
+    <div id="grp_regime_retraite" class="hidden">
       <label>
-        19. Veuillez décrire le régime de retraite :
+        19. Décrire le régime de retraite :
         <textarea id="Description_regime_retraite"></textarea>
       </label>
     </div>
@@ -208,7 +208,7 @@
     <h2>E. Informations générales</h2>
 
     <label>
-      20. NEQ de l’entité
+      20. NEQ
       <input type="text" id="NEQ">
     </label>
 
@@ -218,12 +218,12 @@
     </label>
 
     <label>
-      22. Nombre d’employés déclarés sous l’ARC
+      22. Nombre d’employés déclarés
       <input type="number" id="Nb_employes_ARC" min="0">
     </label>
 
     <label>
-      23. Revenus annuels dépassent-ils 5 M$ ?
+      23. Revenus > 5 M$ ?
       <select id="Revenus_5M">
         <option value="">—</option>
         <option>Oui</option>
@@ -232,7 +232,7 @@
     </label>
 
     <label>
-      24. Participez-vous au programme Travail partagé ?
+      24. Travail partagé ?
       <select id="Travail_partage">
         <option value="">—</option>
         <option>Oui</option>
@@ -240,9 +240,9 @@
       </select>
     </label>
 
-    <div id="grp_travail_partage" class="conditional hidden">
+    <div id="grp_travail_partage" class="hidden">
       <label>
-        25. Décrivez les circonstances
+        25. Détails du programme :
         <textarea id="Travail_partage_details"></textarea>
       </label>
     </div>
@@ -254,7 +254,7 @@
     <h2>F. Informations complémentaires</h2>
 
     <label>
-      26. Avez-vous des informations complémentaires ?
+      26. Autres informations
       <textarea id="Informations_complementaires"></textarea>
     </label>
 
@@ -270,7 +270,8 @@
   <button id="btn_submit">Soumettre</button>
   <div id="msg"></div>
 
-  app.js>
+  <!-- Script logique -->
+  <script src="app.js"></script>
 
 </body>
 </html>
