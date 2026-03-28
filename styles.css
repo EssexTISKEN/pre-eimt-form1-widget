@@ -1,5 +1,7 @@
 /* RESET SIMPLE */
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
 body {
   font-family: "Inter", "Segoe UI", Arial, sans-serif;
@@ -35,7 +37,7 @@ section h2 {
   color: #056abf;
 }
 
-/* LABEL + INPUT */
+/* FORM INPUTS */
 label {
   display: block;
   margin-bottom: 18px;
@@ -43,24 +45,31 @@ label {
   font-weight: 500;
 }
 
-input, select, textarea {
+input,
+select,
+textarea {
   width: 100%;
   margin-top: 6px;
   padding: 10px 14px;
   border: 1px solid #c1c4c6;
   border-radius: 6px;
   font-size: 15px;
+  background: #fff;
 }
 
-input:focus, select:focus, textarea:focus {
+input:focus,
+select:focus,
+textarea:focus {
   outline: none;
   border-color: #49dcee;
   box-shadow: 0 0 0 2px rgba(73,220,238,0.25);
 }
 
-textarea { min-height: 100px; }
+textarea {
+  min-height: 100px;
+}
 
-/* TABLE TET */
+/* TABLE */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -81,7 +90,7 @@ th {
 /* CONDITIONAL */
 .hidden { display: none; }
 
-/* BOUTON SOUMETTRE */
+/* BUTTON */
 #btn_submit {
   background: linear-gradient(135deg, #20c003, #70f012);
   color: white;
@@ -98,9 +107,55 @@ th {
   box-shadow: 0 4px 10px rgba(32,192,3,0.25);
 }
 
-/* -----------------------------------------------------
-   DRAG & DROP — AJOUTÉ SANS TOUCHER AU RESTE
------------------------------------------------------- */
+/* =======================
+   MULTI-TAG SELECTOR
+======================= */
+.multi-select {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid #c1c4c6;
+  border-radius: 8px;
+  background: white;
+}
+
+.multi-option {
+  padding: 8px 14px;
+  border-radius: 24px;
+  background: #eef7ff;
+  border: 1px solid #8bb7e0;
+  cursor: pointer;
+  font-size: 14px;
+  user-select: none;
+  transition: all 0.2s ease;
+}
+
+.multi-option:hover {
+  background: #d8edff;
+}
+
+.multi-option.selected {
+  background: #056abf;
+  border-color: #044580;
+  color: white;
+  font-weight: 600;
+  position: relative;
+  padding-left: 28px;
+}
+
+.multi-option.selected::before {
+  content: "✓";
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-weight: bold;
+}
+
+/* =======================
+   DRAG & DROP
+======================= */
 .dropzone {
   border: 2px dashed #49dcee;
   background: #f7fcff;
