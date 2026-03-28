@@ -125,10 +125,10 @@ ZOHO.embeddedApp.on("PageLoad", async function (data) {
         show("grp_travail_partage", $("Travail_partage").value === "Oui");
 
     /* =======================
-       Case spéciale : Nb TET
+       ⭐ CORRECTION FONDAMENTALE Q10 / TET=1 ⭐
     ======================= */
-    $("Nb_TET_vises").oninput = () => {
 
+    function updateTETLogic() {
         const n = parseInt($("Nb_TET_vises").value || "0", 10);
 
         if (n === 1) {
@@ -143,9 +143,17 @@ ZOHO.embeddedApp.on("PageLoad", async function (data) {
                 rebuildRows();
             } else if ($("Tous_meme_salaire").value === "Oui") {
                 show("grp_salaire_unique", true);
+            } else {
+                show("grp_salaire_unique", false);
             }
         }
-    };
+    }
+
+    // ⭐ handle both events
+    $("Nb_TET_vises").oninput = updateTETLogic;
+    $("Nb_TET_vises").onchange = updateTETLogic;
+
+    // ⭐ FIN AJOUT
 
     /* =======================
        Tableau dynamique TET
@@ -176,7 +184,7 @@ ZOHO.embeddedApp.on("PageLoad", async function (data) {
     }
 
     /* =======================
-       Contexte Matter
+       Matter prefill
     ======================= */
     let matterId = data?.EntityId || null;
 
@@ -187,9 +195,6 @@ ZOHO.embeddedApp.on("PageLoad", async function (data) {
         } catch (e) {}
     }
 
-    /* =======================
-       Préremplissage Matter
-    ======================= */
     if (matterId) {
         try {
             const resp = await ZOHO.CRM.API.getRecord({
