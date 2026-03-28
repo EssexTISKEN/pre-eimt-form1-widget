@@ -8,10 +8,10 @@
   <title>Formulaire employeur – PRÉ‑EIMT</title>
 
   <!-- SDK Zoho POUR WEB TABS -->
-  <script src="https://live.zwidgets.com/js-sdk/1.2/ZohoEmbededAppSDK.min.js"></script>
+  https://live.zwidgets.com/js-sdk/1.2/ZohoEmbededAppSDK.min.js
 
   <!-- Feuille de style -->
-  <link rel="stylesheet" href="styles.css" />
+  styles.css
 </head>
 
 <body>
@@ -21,12 +21,7 @@
   <p>
     Bienvenue. Ce formulaire nous permettra de recueillir les informations nécessaires à la préparation
     des différentes demandes liées à l'obtention du ou des permis de travail pour lesquels vous nous avez mandatés.
-    Les renseignements fournis feront l’objet d’une analyse attentive par notre équipe. Il est possible que nous
-    communiquions avec vous afin d’obtenir des précisions supplémentaires lorsque requis.
-  </p>
-
-  <p>
-    Merci de remplir ce questionnaire avec soin. N'hésitez pas à communiquer avec nous au besoin.
+    Merci de remplir ce questionnaire avec soin.
   </p>
 
   <!-- ========================= A. Informations générales ========================= -->
@@ -106,15 +101,15 @@
   <section>
     <h2>C. Lieu de travail</h2>
 
-    <label>7. Quelle est l’adresse du lieu de travail ?
+    <label>7. Adresse du lieu de travail
       <input id="Adresse_LieuTravail">
     </label>
 
-    <label>8. Quelle est la ville du lieu de travail ?
+    <label>8. Ville
       <input id="Ville_LieuTravail">
     </label>
 
-    <label>9. Quel est le code postal du lieu de travail ?
+    <label>9. Code postal
       <input id="CodePostal_LieuTravail">
     </label>
 
@@ -143,7 +138,7 @@
     </div>
 
     <div id="grp_liste_tet" class="conditional hidden">
-      <label>12. Veuillez indiquer le prénom, le nom et le salaire horaire de chaque TET :</label>
+      <label>12. Prénom, nom et salaire de chaque TET :</label>
       <table>
         <thead>
           <tr><th>Prénom</th><th>Nom</th><th>Salaire horaire</th></tr>
@@ -169,14 +164,12 @@
     </div>
 
     <label>
-      15. Combien de jours de vacances annuels sont offerts ?
+      15. Jours de vacances annuels offerts
       <input id="Vacances_jours" type="number" min="0" value="10">
     </label>
 
-    <!-- Nouvelle Q16 multi-select type “tags” -->
-    <label>
-      16. Parmi les avantages sociaux suivants, lesquels offrez-vous ?
-    </label>
+    <!-- Q16 — MULTI TAG SELECTOR -->
+    <label>16. Parmi les avantages sociaux suivants, lesquels offrez-vous ?</label>
 
     <div id="Avantages_container" class="multi-select">
       <div class="multi-option" data-value="Assurance maladie">Assurance maladie</div>
@@ -188,7 +181,7 @@
     <input type="hidden" id="Avantages_sociaux">
 
     <label>
-      17. Décrivez les avantages sociaux (détails) :
+      17. Décrivez les avantages sociaux (détails)
       <textarea id="Avantages_details"></textarea>
     </label>
 
@@ -215,22 +208,22 @@
     <h2>E. Informations générales</h2>
 
     <label>
-      20. Quel est le NEQ de l’entité ?
+      20. NEQ de l’entité
       <input type="text" id="NEQ">
     </label>
 
     <label>
-      21. Quel est le numéro ARC de l’entité ?
+      21. Numéro ARC
       <input type="text" id="ARC">
     </label>
 
     <label>
-      22. Combien d’employés sont actuellement déclarés sous le numéro ARC ?
+      22. Nombre d’employés déclarés sous l’ARC
       <input type="number" id="Nb_employes_ARC" min="0">
     </label>
 
     <label>
-      23. Vos revenus annuels dépassent-ils 5 M$ ?
+      23. Revenus annuels dépassent-ils 5 M$ ?
       <select id="Revenus_5M">
         <option value="">—</option>
         <option>Oui</option>
@@ -239,7 +232,7 @@
     </label>
 
     <label>
-      24. Participez-vous au programme Travail partagé d’EDSC ?
+      24. Participez-vous au programme Travail partagé ?
       <select id="Travail_partage">
         <option value="">—</option>
         <option>Oui</option>
@@ -249,7 +242,7 @@
 
     <div id="grp_travail_partage" class="conditional hidden">
       <label>
-        25. Veuillez décrire les circonstances relatives à votre participation :
+        25. Décrivez les circonstances
         <textarea id="Travail_partage_details"></textarea>
       </label>
     </div>
@@ -261,14 +254,14 @@
     <h2>F. Informations complémentaires</h2>
 
     <label>
-      26. Avez-vous des informations complémentaires à fournir ?
+      26. Avez-vous des informations complémentaires ?
       <textarea id="Informations_complementaires"></textarea>
     </label>
 
-    <label>27. Voulez-vous téléverser d’autres documents pertinents ?</label>
+    <label>27. Documents supplémentaires</label>
     <div class="dropzone" data-target="Documents_supplementaires">
       <p>Déposez vos fichiers ici ou <span>cliquez pour parcourir</span></p>
-      <input type="file" id="Documents_supplementaires" multiple hidden>
+      <input type="file" id="Documents_supplementaires" hidden multiple>
       <div class="file-list" id="Documents_supplementaires_list"></div>
     </div>
 
@@ -277,8 +270,7 @@
   <button id="btn_submit">Soumettre</button>
   <div id="msg"></div>
 
-  <!-- Script logique -->
-  <script src="app.js"></script>
+  app.js>
 
 </body>
 </html>
