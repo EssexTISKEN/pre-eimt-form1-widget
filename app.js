@@ -252,7 +252,7 @@ ZOHO.embeddedApp.on("PageLoad", async function (data) {
         /* INSERT CRM */
         try {
             const ins = await ZOHO.CRM.API.insertRecord({
-                Entity: "PRE_EIMT_Formulaire_1",
+                Entity: "PRE_EIMT",
                 APIData: [payload],
             });
 
