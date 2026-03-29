@@ -15,6 +15,61 @@ ZOHO.embeddedApp.on("PageLoad", async function (data) {
     };
 
     /* =======================
+       1. RÉCUPÉRER PRE_EIMT_ID
+    ======================= */
+    const preId = data?.EntityId || null;
+
+    if (!preId) {
+        console.error("❌ Aucun PRE_EIMT ID reçu dans PageLoad.");
+        $("msg").textContent = "Erreur : Aucun questionnaire associé.";
+        return;
+    }
+
+    /* =======================
+       2. CHARGER LE PRE‑EIMT
+    ======================= */
+    let matterId = null;
+    let matterNumber = "";
+
+    try {
+        const pre = await ZOHO.CRM.API.getRecord({
+            Entity: "PRE_EIMT",
+            RecordID: preId
+        });
+
+        const preData = pre?.data?.[0];
+        if (!preData) throw "Données PRE_EIMT introuvables.";
+
+        matterId = preData?.Matter?.id || null;
+
+    } catch (e) {
+        console.error("❌ Erreur chargement PRE_EIMT", e);
+        $("msg").textContent = "Erreur lors du chargement du questionnaire.";
+        return;
+    }
+
+    /* =======================
+       3. CHARGER LE MATTER
+    ======================= */
+    if (matterId) {
+        try {
+            const m = await ZOHO.CRM.API.getRecord({
+                Entity: "Matters",
+                RecordID: matterId
+            });
+
+            matterNumber = m?.data?.[0]?.Matter_number || "";
+
+        } catch (e) {
+            console.error("❌ Erreur chargement Matter", e);
+        }
+    }
+
+    if ($("Matter_number")) {
+        $("Matter_number").value = matterNumber;
+    }
+
+    /* =======================
        DRAG & DROP
     ======================= */
     function initDropzones() {
@@ -55,20 +110,21 @@ ZOHO.embeddedApp.on("PageLoad", async function (data) {
     initDropzones();
 
     /* =======================
-       MULTI-TAGS
+       MULTI‑TAGS
     ======================= */
     const tagEls = document.querySelectorAll("#Avantages_container .multi-option");
 
     tagEls.forEach(opt => {
         opt.addEventListener("click", () => {
             opt.classList.toggle("selected");
-            const selected = [...document.querySelectorAll(".multi-option.selected")].map(o => o.dataset.value);
+            const selected = [...document.querySelectorAll(".multi-option.selected")]
+                .map(o => o.dataset.value);
             $("Avantages_sociaux").value = JSON.stringify(selected);
         });
     });
 
     /* =======================
-       Conditionnels
+       CONDITIONAL FIELDS
     ======================= */
     $("EIMT_anterieure").onchange = () =>
         show("grp_eimt_pdf", $("EIMT_anterieure").value === "Oui");
@@ -86,7 +142,7 @@ ZOHO.embeddedApp.on("PageLoad", async function (data) {
         show("grp_travail_partage", $("Travail_partage").value === "Oui");
 
     /* =======================
-       Nouvelle logique TET
+       LOGIQUE TET
     ======================= */
     function updateTETLogic() {
         const n = parseInt($("Nb_TET_vises").value || "0", 10);
@@ -118,7 +174,7 @@ ZOHO.embeddedApp.on("PageLoad", async function (data) {
     updateTETLogic();
 
     /* =======================
-       TABLEAU TET
+       SUBFORM TET
     ======================= */
     const body = $("tbl_body");
 
@@ -145,63 +201,19 @@ ZOHO.embeddedApp.on("PageLoad", async function (data) {
     }
 
     /* =======================
-       Prefill Matter
-    ======================= */
-    let matterId = data?.EntityId || null;
-
-    if (!matterId) {
-        try {
-            const ctx = await ZOHO.CRM.UI.Record.get({ Entity: "Matters" });
-            matterId = ctx?.data?.Id || null;
-        } catch (e) {}
-    }
-
-    if (matterId) {
-        try {
-            const resp = await ZOHO.CRM.API.getRecord({
-                Entity: "Matters",
-                RecordID: matterId,
-            });
-
-            const m = resp?.data?.[0];
-
-            if (m) {
-                if (m.C_P_lieu_de_travail && !$("CodePostal_LieuTravail").value) {
-                    $("CodePostal_LieuTravail").value = m.C_P_lieu_de_travail;
-                }
-
-                const info = Array.isArray(m.Info_TET) ? m.Info_TET : [];
-                const pre = [];
-
-                for (const t of info) {
-                    pre.push({
-                        prenom: t.Prénom || "",
-                        nom: t.Nom || "",
-                        salaire: t.Salaire_horaire || "",
-                    });
-                }
-
-                if (pre.length) {
-                    $("Tous_meme_salaire").value = "Non";
-                    $("Nb_TET_vises").value = pre.length;
-                    updateTETLogic();
-                    rebuildRows(pre);
-                }
-            }
-        } catch (e) {}
-    }
-
-    /* =======================
-       SOUMISSION
+       SOUMISSION DU FORMULAIRE
     ======================= */
     $("btn_submit").onclick = async () => {
+
         $("msg").textContent = "Traitement...";
 
-        /* PAYLOAD CRM — version corrigée avec VRAIS API NAMES */
+        /* ==========
+           PAYLOAD CRM
+        ========== */
         const payload = {
             Matter: matterId,
-            Titre_poste: $("Titre_poste").value || "",
 
+            Titre_poste: $("Titre_poste").value || "",
             Nb_TET_vises: parseInt($("Nb_TET_vises").value || "0", 10),
             Renouvellement: $("Renouvellement").value,
             Poste_syndique: $("Poste_syndique").value,
@@ -225,16 +237,18 @@ ZOHO.embeddedApp.on("PageLoad", async function (data) {
 
             Questionnaire_statut: "Soumis",
 
-            /* CHAMPS RÉELS CRM */
             No_ARC: $("ARC").value || "",
             NEQ: $("NEQ").value || "",
             Nb_employes_ARC_recu: parseInt($("Nb_employes_ARC").value || "0", 10),
             Revenu_gt_5M_recu: $("Revenus_5M").value,
+
             Travail_partage_existe: $("Travail_partage").value,
             Travail_partage_details: $("Travail_partage_details").value || ""
         };
 
-        /* GESTION SALAIRES */
+        /* ==========
+           SUBFORM
+        ========== */
         if (payload.Nb_TET_vises === 1 || payload.Tous_meme_salaire === "Oui") {
             payload.Salaire_horaire_unique = dec2($("Salaire_horaire_unique").value);
         } else if (payload.Tous_meme_salaire === "Non") {
@@ -249,24 +263,64 @@ ZOHO.embeddedApp.on("PageLoad", async function (data) {
             payload.Liste_TET = rows;
         }
 
-        /* INSERT CRM */
+        /* =======================
+           1. UPDATE PRE_EIMT
+        ======================= */
         try {
-            const ins = await ZOHO.CRM.API.insertRecord({
+            const upd = await ZOHO.CRM.API.updateRecord({
                 Entity: "PRE_EIMT",
-                APIData: [payload],
+                APIData: [{
+                    id: preId,
+                    ...payload
+                }]
             });
 
-            if (ins?.data?.[0]?.code === "SUCCESS") {
-                $("msg").textContent = "Soumis avec succès!";
-                alert("Soumis.");
-            } else {
-                $("msg").textContent = "Erreur de création.";
-                console.error(ins);
+            if (upd?.data?.[0]?.code !== "SUCCESS") {
+                $("msg").textContent = "Erreur lors de la mise à jour.";
+                console.error(upd);
+                return;
             }
+
         } catch (e) {
-            $("msg").textContent = "Erreur inattendue.";
+            $("msg").textContent = "Erreur inattendue (update).";
             console.error(e);
+            return;
         }
+
+        /* =======================
+           2. UPLOAD DES FICHIERS
+        ======================= */
+
+        async function uploadFiles(inputId, apiFieldName) {
+            const input = $(inputId);
+            if (!input || !input.files || input.files.length === 0) return;
+
+            for (const file of input.files) {
+                try {
+                    await ZOHO.CRM.API.uploadFile({
+                        Entity: "PRE_EIMT",
+                        RecordID: preId,
+                        File: file,
+                        FileName: file.name,
+                        Field: apiFieldName
+                    });
+                } catch (e) {
+                    console.error("❌ Erreur upload fichier", apiFieldName, file.name, e);
+                }
+            }
+        }
+
+        // UPLOAD PAR CHAMP
+        await uploadFiles("EIMT_anterieure_pdf", "EIMT_anterieure_pdf");
+        await uploadFiles("Description_poste_pdf", "Description_poste_pdf");
+        await uploadFiles("Documents_supplementaires", "Documents_supplementaires");
+
+        /* =======================
+           3. FIN → MESSAGE
+        ======================= */
+        $("msg").textContent = "Soumis avec succès!";
+
+        alert("Soumis avec succès.");
     };
 });
 
