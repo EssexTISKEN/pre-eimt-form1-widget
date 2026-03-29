@@ -287,6 +287,17 @@ ZOHO.embeddedApp.on("PageLoad", async function (data) {
             return;
         }
 
+        /* ==========================
+   2. SYNC PRE → MATTER (Deluge)
+=========================== */
+
+try {
+    await ZOHO.CRM.FUNCTIONS.execute("SYNC_PRE_TO_MATTER", {
+        preId: preId
+    });
+} catch (e) {
+    console.error("Erreur durant la sync PRE → MATTER :", e);
+}
         /* =======================
            2. UPLOAD DES FICHIERS
         ======================= */
