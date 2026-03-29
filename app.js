@@ -267,6 +267,41 @@ ZOHO.embeddedApp.on("PageLoad", async function (data) {
            1. UPDATE PRE_EIMT
         ======================= */
         try {
+     
+
+let sfChanged = false;
+
+// Ancien SF (chargé au début du formulaire)
+const oldSF = preData?.Liste_TET || [];
+
+// Nouveau SF (ce que l’utilisateur soumet)
+const newSF = payload.Liste_TET || [];
+
+// 1. Nombre de lignes différent ?
+if (oldSF.length !== newSF.length) {
+    sfChanged = true;
+} else {
+    // 2. Comparaison ligne par ligne
+    for (let i = 0; i < oldSF.length; i++) {
+        const a = oldSF[i];
+        const b = newSF[i];
+
+        if (
+            a.Pr_nom_du_Travailleur !== b.Pr_nom_du_Travailleur ||
+            a.Nom_du_Travailleur !== b.Nom_du_Travailleur ||
+            Number(a.Salaire_horaire) !== Number(b.Salaire_horaire)
+        ) {
+            sfChanged = true;
+            break;
+        }
+    }
+}
+
+// 3. Si le SF change → mettre le timestamp (déclencheur workflow)
+if (sfChanged) {
+    payload.PRE_SF_Touch_TS = new Date().toISOString();
+}
+``
             const upd = await ZOHO.CRM.API.updateRecord({
                 Entity: "PRE_EIMT",
                 APIData: [{
